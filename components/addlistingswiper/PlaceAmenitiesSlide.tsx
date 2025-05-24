@@ -1,11 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-
-type Amenity = {
-  name: string;
-  icon: keyof typeof MaterialCommunityIcons.glyphMap;
-};
+import { Amenity, PlaceAmenitiesSlideProps } from "../../interfaces";
 
 const amenities: Amenity[] = [
   { name: "WiFi", icon: "wifi" },
@@ -20,19 +16,22 @@ const amenities: Amenity[] = [
   { name: "Security", icon: "shield-check" },
 ];
 
-export default function PlaceAmenitiesSlide() {
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+export default function PlaceAmenitiesSlide({
+  setSelectedAmenities,
+}: PlaceAmenitiesSlideProps) {
+  const [selectedAmenities, setSelectedAmenitiesLocal] = useState<string[]>([]);
 
   const toggleAmenity = (amenityName: string) => {
-    setSelectedAmenities((prev) =>
-      prev.includes(amenityName)
-        ? prev.filter((name) => name !== amenityName)
-        : [...prev, amenityName]
-    );
+    const newSelectedAmenities = selectedAmenities.includes(amenityName)
+      ? selectedAmenities.filter((name) => name !== amenityName)
+      : [...selectedAmenities, amenityName];
+
+    setSelectedAmenitiesLocal(newSelectedAmenities);
+    setSelectedAmenities(newSelectedAmenities);
   };
 
   return (
-    <View className="flex-1  m-8 mt-0">
+    <View className="flex-1 m-8 mt-0">
       <Text className="text-3xl font-extrabold">
         What amenities does your place have?
       </Text>
@@ -43,12 +42,12 @@ export default function PlaceAmenitiesSlide() {
         className="mt-8 mb-5 p-6 border border-line rounded-xl drop-shadow-lg"
         showsVerticalScrollIndicator={false}
       >
-        <View className="flex-row flex-wrap justify-between relative">
+        <View className="flex-row flex-wrap justify-between">
           {amenities.map((amenity, i) => (
             <Pressable
               key={i}
               onPress={() => toggleAmenity(amenity.name)}
-              className={`w-[48%] h-[140px] mb-8 shadow rounded-lg p-4 ${
+              className={`w-[30%] h-[100px] mb-4 shadow rounded-lg p-2 ${
                 selectedAmenities.includes(amenity.name)
                   ? "bg-blue-50 border-2 border-blue-500"
                   : "bg-white"
@@ -57,7 +56,7 @@ export default function PlaceAmenitiesSlide() {
               <View className="items-center justify-center h-full">
                 <MaterialCommunityIcons
                   name={amenity.icon}
-                  size={32}
+                  size={24}
                   color={
                     selectedAmenities.includes(amenity.name)
                       ? "#0066CC"
@@ -65,7 +64,7 @@ export default function PlaceAmenitiesSlide() {
                   }
                 />
                 <Text
-                  className={`mt-2 text-center font-medium ${
+                  className={`mt-1 text-center font-medium text-xs ${
                     selectedAmenities.includes(amenity.name)
                       ? "text-blue-600"
                       : "text-gray-700"
